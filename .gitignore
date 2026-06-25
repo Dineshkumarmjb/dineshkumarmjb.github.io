@@ -1,0 +1,11 @@
+# Source / personal documents — not part of the website
+*.pdf
+Career Journey.txt
+
+# Early draft case studies (placeholder content, not published)
+projects/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
