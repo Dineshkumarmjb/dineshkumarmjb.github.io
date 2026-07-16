@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered Healthcare Platform | Dinesh Kumar</title>
+  <meta name="description" content="Case study: a wearable-and-hub platform that captures clinical conversations and turns them into structured SOAP notes and EHR entries. Technical product leadership and system architecture." />
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand"><a href="../index.html">Dinesh Kumar</a></div>
+      <nav class="nav-links">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#projects">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="cs-hero" style="border-top:none;">
+      <div class="container">
+        <a class="back-link" href="../index.html#projects">&larr; All case studies</a>
+        <p class="eyebrow">Case study &middot; Healthcare &middot; Ambient AI</p>
+        <h1>AI-Powered Healthcare Platform</h1>
+        <p class="section-lead" style="margin-top:16px;">
+          A wearable and a room hub that listen to the conversation a doctor is already having with a patient, and
+          turn it into structured clinical notes so doctors and nurses spend less time filling forms. I owned the
+          architecture, and my job was to get the wearable, the hub, the cloud, and the AI working together as one
+          system.
+        </p>
+        <div class="cs-meta">
+          <span><b>Role:</b> Technical Product Lead &amp; System Architect</span>
+          <span><b>Company:</b> AmbientOne (remote)</span>
+          <span><b>Scope:</b> End-to-end technical realization and architecture</span>
+          <span><b>Outcome:</b> ~30% reported reduction in documentation effort</span>
+        </div>
+        <div class="note" style="margin-top:22px;">
+          This is based on a real product I led. I have kept vendor names, exact parts, and clinical details generic
+          on purpose. My side of it was the technical work: product realization, system architecture, and working
+          across teams. I did not do the market research or own the business strategy.
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section" style="border-top:none;">
+      <div class="container">
+        <h2>The problem</h2>
+        <p>
+          Doctors and nurses spend a big part of their day on documentation: writing up each patient visit and
+          filling out EHR fields. That is time taken straight from patients. The information is already there,
+          the doctor and patient say it out loud during the visit. The hard part is capturing it without making
+          the doctor stop to pick up a phone or turn to a screen.
+        </p>
+        <p>
+          So the product had to sit quietly in the background of a normal visit, capture both sides of the
+          conversation, and give the doctor a ready draft to check instead of an empty form to fill in. To do that,
+          the wearable, the hub, the cloud, and the language model all had to work together and stay reliable,
+          because in a clinic you cannot drop a word or file a note that nobody checked.
+        </p>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>User workflow</h2>
+        <p>
+          The idea was that the doctor barely has to change how they already work. The recording happens in the
+          background. The only things they actually do are say a command to start, and approve the notes at the end.
+        </p>
+        <ul>
+          <li><b>Control by voice:</b> The hub, a small computer driving a wall display, shows the UI. A compact speech model runs on the hub itself to recognize spoken commands, so the clinician navigates the interface and starts or stops capture by voice without touching anything.</li>
+          <li><b>Pair:</b> A wearable connects to the hub only when it is within a few feet, and drops the connection once it moves roughly ten feet away, with the distance measured by short-range ranging. On connecting, the wearable presents its identifier over the low-power link; only devices on the hub's allow-list are accepted, and only an approved, in-range device is sent the wake signal.</li>
+          <li><b>Capture:</b> Two lightweight wearables, one on the doctor and one on the patient, pick up the two sides of the conversation through MEMS microphones. They stay asleep to preserve battery and wake only on the start command.</li>
+          <li><b>Status at a glance:</b> An RGB light on the lapel device signals its state, connected or disconnected, recording, and battery low, so the person wearing it always knows what it is doing without checking the hub.</li>
+          <li><b>Stream:</b> Audio is encoded on the device and streamed to the hub in half-second chunks, kept as two separate channels so doctor and patient stay distinguishable.</li>
+          <li><b>Transcribe:</b> The hub streams the audio to the cloud over a secured connection. A self-hosted speech-to-text model transcribes it, and the text returns to the hub and appears on screen in near real time, split by speaker.</li>
+          <li><b>Structure:</b> In parallel, a background step sends the running transcript to a general-purpose language model, prompted to produce SOAP notes in a fixed JSON structure. That structured output flows back and populates the EHR forms.</li>
+          <li><b>Approve:</b> Nothing is filed automatically. The clinician verifies and approves the generated notes. Human approval is always the last step.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>System architecture</h2>
+        <p>
+          The system has three parts: the wearables people wear, the hub in the room, and the cloud that does the
+          heavy speech and language work. Most of my design decisions came down to two questions: how much should
+          run on a small battery-powered device versus in the cloud, and where does a person stay in control.
+        </p>
+        <div class="cs-figure">
+          <svg viewBox="0 0 980 508" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture from paired wearables through a room hub to the cloud and back, including the pairing handshake">
+            <defs>
+              <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+              </marker>
+              <marker id="arrc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#e0a53f"/>
+              </marker>
+              <style>
+                .lane { fill:#0f172a; stroke:#1f2937; }
+                .lbl { fill:#64748b; font:600 12px Inter,sans-serif; letter-spacing:0.1em; }
+                .box { fill:#111827; stroke:#334155; }
+                .boxa { fill:#111827; stroke:#38bdf8; }
+                .boxp { fill:#111827; stroke:#a78bfa; }
+                .boxc { fill:#111827; stroke:#e0a53f; }
+                .t { fill:#e5e7eb; font:13px Inter,sans-serif; text-anchor:middle; }
+                .ts { fill:#94a3b8; font:10px monospace; text-anchor:middle; }
+                .flow { stroke:#64748b; stroke-width:2; fill:none; marker-end:url(#arr); }
+                .flowr { stroke:#a78bfa; stroke-width:2; fill:none; marker-end:url(#arr); stroke-dasharray:5 4; }
+                .ctrl { stroke:#e0a53f; stroke-width:1.8; fill:none; marker-end:url(#arrc); stroke-dasharray:4 3; }
+                .tc { fill:#e0a53f; font:600 11px monospace; text-anchor:middle; }
+                .leg { fill:#c79433; font:11px Inter,sans-serif; }
+              </style>
+            </defs>
+
+            <!-- lanes -->
+            <rect class="lane" x="12" y="48" width="248" height="436" rx="10"/>
+            <rect class="lane" x="284" y="48" width="248" height="436" rx="10"/>
+            <rect class="lane" x="556" y="48" width="412" height="436" rx="10"/>
+            <text class="lbl" x="22" y="38">WEARABLES &middot; EDGE</text>
+            <text class="lbl" x="294" y="38">HUB &middot; LINUX + DISPLAY</text>
+            <text class="lbl" x="566" y="38">CLOUD</text>
+
+            <!-- wearables -->
+            <rect class="boxa" x="34" y="70" width="204" height="44" rx="8"/>
+            <text class="t" x="136" y="90">Doctor wearable</text>
+            <text class="ts" x="136" y="106">MEMS mic</text>
+
+            <rect class="boxa" x="34" y="124" width="204" height="44" rx="8"/>
+            <text class="t" x="136" y="144">Patient wearable</text>
+            <text class="ts" x="136" y="160">MEMS mic</text>
+
+            <rect class="box" x="34" y="178" width="204" height="40" rx="8"/>
+            <text class="t" x="136" y="203">Codec encode</text>
+
+            <rect class="box" x="34" y="228" width="204" height="48" rx="8"/>
+            <text class="t" x="136" y="250">On-device buffer + queue</text>
+            <text class="ts" x="136" y="266">0.5s chunks</text>
+
+            <rect class="box" x="34" y="286" width="204" height="44" rx="8"/>
+            <text class="t" x="136" y="305">Low-power radio link</text>
+            <text class="ts" x="136" y="321">allow-listed &middot; in range</text>
+
+            <rect class="boxa" x="34" y="340" width="204" height="46" rx="8"/>
+            <text class="t" x="136" y="360">RGB status light</text>
+            <text class="ts" x="136" y="376">connect &middot; record &middot; battery</text>
+
+            <!-- hub -->
+            <rect class="boxa" x="306" y="70" width="204" height="44" rx="8"/>
+            <text class="t" x="408" y="90">Voice control (UI)</text>
+            <text class="ts" x="408" y="106">on-hub speech model</text>
+
+            <rect class="boxc" x="306" y="128" width="204" height="44" rx="8"/>
+            <text class="t" x="408" y="148">Pairing gate</text>
+            <text class="ts" x="408" y="164">allow-list + range</text>
+
+            <rect class="box" x="306" y="186" width="204" height="48" rx="8"/>
+            <text class="t" x="408" y="207">Two-channel capture</text>
+            <text class="ts" x="408" y="223">L = doctor &middot; R = patient</text>
+
+            <rect class="box" x="306" y="248" width="204" height="42" rx="8"/>
+            <text class="t" x="408" y="274">Secured uplink</text>
+
+            <rect class="boxa" x="306" y="304" width="204" height="48" rx="8"/>
+            <text class="t" x="408" y="325">Live transcript + EHR</text>
+            <text class="ts" x="408" y="341">clinician verifies + approves</text>
+
+            <rect class="box" x="306" y="366" width="204" height="40" rx="8"/>
+            <text class="ts" x="408" y="391">encrypted &middot; 24h retention</text>
+
+            <!-- cloud -->
+            <rect class="box" x="582" y="70" width="360" height="42" rx="8"/>
+            <text class="t" x="762" y="96">Secured ingest + auth</text>
+
+            <rect class="box" x="582" y="124" width="360" height="40" rx="8"/>
+            <text class="t" x="762" y="149">Streaming queue</text>
+
+            <rect class="box" x="582" y="178" width="360" height="48" rx="8"/>
+            <text class="t" x="762" y="199">Self-hosted speech-to-text</text>
+            <text class="ts" x="762" y="215">transcription</text>
+
+            <rect class="boxp" x="582" y="242" width="360" height="54" rx="8"/>
+            <text class="t" x="762" y="264">LLM structuring</text>
+            <text class="ts" x="762" y="280">SOAP notes &middot; JSON schema</text>
+
+            <!-- data flows -->
+            <!-- audio: wearable radio -> two-channel capture -->
+            <path class="flow" d="M238 308 H252 V210 H304"/>
+            <!-- capture -> uplink -->
+            <path class="flow" d="M408 234 V248"/>
+            <!-- uplink -> cloud ingest -->
+            <path class="flow" d="M510 269 H548 V91 H580"/>
+            <!-- cloud internal -->
+            <path class="flow" d="M762 112 V124"/>
+            <path class="flow" d="M762 164 V178"/>
+            <path class="flow" d="M762 226 V242"/>
+            <!-- return: transcript + notes -> hub display/EHR -->
+            <path class="flowr" d="M582 269 H556 V328 H512"/>
+            <text class="ts" x="590" y="322" fill="#a78bfa" text-anchor="start">transcript + notes</text>
+
+            <!-- control / handshake -->
+            <!-- start command triggers pairing -->
+            <path class="ctrl" d="M408 114 V128"/>
+            <!-- 1: wearable presents ID -> pairing gate -->
+            <path class="ctrl" d="M238 300 H272 V152 H304"/>
+            <text class="tc" x="266" y="272">1</text>
+            <!-- 2: pairing gate -> wearable wake (only if approved) -->
+            <path class="ctrl" d="M306 140 H296 V96 H240"/>
+            <text class="tc" x="296" y="122">2</text>
+
+            <!-- handshake legend -->
+            <text class="leg" x="14" y="500">Handshake:  1  wearable presents its ID over the low-power link      2  hub wakes it only if allow-listed and in range</text>
+          </svg>
+          <p class="cs-caption">
+            The wearables stay light and just capture audio, while the heavy speech and language work happens in the
+            cloud. The doctor and patient are kept on separate channels so the two voices stay easy to tell apart.
+            The finished notes come back to the hub, where the doctor checks and approves them before anything is
+            filed. Short-range ranging keeps a wearable connected only within a few feet of the hub, and also helps
+            locate staff in the building. Audio on the hub is encrypted and cleared every 24 hours, and only
+            allow-listed wearables can connect.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>Product decisions I owned</h2>
+
+        <div class="decision">
+          <h4>Move the wearable link to a low-power radio</h4>
+          <p>
+            In the first version I sent the audio from the wearable to the hub over a standard network connection.
+            It worked, but the power draw was too high for a device meant to be worn through a full clinic day. I
+            moved that link to a low-power short-range radio, which cut the power enough to make all-day wear
+            practical.
+          </p>
+          <span class="tradeoff">Trade-off: the low-power link carries less data, and that is what pushed the next two decisions, compressing and chunking the audio on the device.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Compress on the device instead of sending raw audio</h4>
+          <p>
+            At first the wearable sent raw audio to the hub, which was far too much data for a low-power link. I
+            added a low-bitrate codec so the audio is compressed on the device before it goes out, which brought the
+            data and power down to a level the link handles comfortably, and it did not hurt transcription quality.
+          </p>
+          <span class="tradeoff">Trade-off: it adds encoding work on a small device and a small drop in audio quality, but the speech model handled the compressed audio well, so it was a reasonable price to pay.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Buffer and queue on the device so no audio is lost</h4>
+          <p>
+            Recording and sending the audio at the same time left a timing gap, and we were losing chunks of audio.
+            I fixed it with a buffer and a queue on the device: the audio goes into the buffer, gets pulled out in
+            half-second chunks, and then goes to the radio. After that, we stopped losing audio.
+          </p>
+          <span class="tradeoff">Trade-off: it adds a little latency and some firmware complexity, but losing part of a patient conversation was not acceptable, so it was a straightforward call.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Self-host the transcription model</h4>
+          <p>
+            Instead of sending patient audio to an outside transcription service, we ran the speech-to-text model
+            on our own cloud. In healthcare, keeping the audio and the transcript inside our own system was more
+            important to us than the convenience of a hosted service.
+          </p>
+          <span class="tradeoff">Trade-off: we had to run and scale that model ourselves, which is more cost and more work for the team.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Recognize commands on the hub, transcribe the conversation in the cloud</h4>
+          <p>
+            The voice commands, navigate, start, and stop, run on a small speech model on the hub itself. The full
+            conversation is transcribed by the bigger model in the cloud. I split them because commands need to
+            respond instantly and keep working even while the network is busy sending audio, while transcribing the
+            conversation needs more accuracy and more compute. Each one ended up where it made sense.
+          </p>
+          <span class="tradeoff">Trade-off: it means keeping two speech models instead of one, and the on-hub model only knows a small set of commands on purpose.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Keep a human approval step on every note</h4>
+          <p>
+            The system writes a draft SOAP note, but it never saves anything to the record by itself. The doctor
+            reads the note and approves it first. That rule is a big part of why doctors were willing to use it at
+            all: the AI gives them a quick first draft, and they stay in charge of what actually goes in.
+          </p>
+          <span class="tradeoff">Trade-off: the time you save is limited by how long the review takes, so the quality of the draft ended up being the thing that mattered most.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Build privacy into the edge</h4>
+          <p>
+            A wearable can only connect if two things are true: it is on the hub's allow-list, and it is close by.
+            The wearable sends its ID over the low-power link, the hub checks it against the allow-list, and only
+            then does it send the wake signal. Short-range ranging keeps the wearable connected only while it is
+            within a few feet of the hub and drops it when it moves away, so a device cannot sit connected across the
+            ward. Audio on the hub is deleted every 24 hours, and anything stored is encrypted. We built all of this
+            in from the start instead of adding it later.
+          </p>
+          <span class="tradeoff">Trade-off: tighter pairing and short retention also meant we had less data on hand for debugging or looking back later.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Update the wearables over the air, and only while they charge</h4>
+          <p>
+            The wearables run firmware that has to be updated in the field, so I built an over-the-air update path
+            for them. New firmware is stored in the cloud, and each hub checks for it once a day. When a new build
+            is available, the hub downloads it and holds it. The wearables themselves are only updated while they
+            sit on the charger: the hub sends an update trigger to a docked device and pushes the firmware to it
+            then. Updating a device while someone is wearing it mid-visit could interrupt capture or drain the
+            battery, so I tied updates to charging, when neither is a concern. While a device charges, a
+            battery-management circuit tracks its charge and health, that status is shown in the hub UI, and every
+            update is logged, so we always know which wearable is on which firmware.
+          </p>
+          <span class="tradeoff">Trade-off: updates roll out gradually across the fleet rather than all at once, so a wearable that is rarely docked can stay a version behind until it is charged.</span>
+        </div>
+
+        <div class="cs-figure" style="margin-top:8px;">
+          <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Over-the-air firmware update flow from cloud firmware store to hub to wearable while it charges">
+            <rect class="box" x="24" y="40" width="220" height="64" rx="8"/>
+            <text class="t" x="134" y="68">Firmware store</text>
+            <text class="ts" x="134" y="86">in the cloud (OTA)</text>
+
+            <rect class="box" x="340" y="40" width="220" height="64" rx="8"/>
+            <text class="t" x="450" y="68">Hub</text>
+            <text class="ts" x="450" y="86">daily check + download</text>
+
+            <rect class="boxa" x="656" y="40" width="220" height="64" rx="8"/>
+            <text class="t" x="766" y="66">Wearable on charger</text>
+            <text class="ts" x="766" y="86">firmware pushed while docked</text>
+
+            <path class="flow" d="M244 72 H338"/>
+            <text class="ts" x="291" y="62">new build</text>
+            <path class="flow" d="M560 72 H654"/>
+            <text class="ts" x="607" y="62">while docked</text>
+
+            <path class="flowr" d="M766 104 V152 H450 V106"/>
+            <text class="ts" x="606" y="170" fill="#a78bfa">battery + health to hub UI</text>
+          </svg>
+          <p class="cs-caption">
+            Firmware sits in the cloud. Each hub checks once a day, downloads any new build, and pushes it to a
+            wearable only while it is docked on the charger. The battery-management circuit reports charge and
+            health back to the hub UI, and every update is logged.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>Tech stack</h2>
+        <div class="stack-grid">
+          <div><h4>Wearable / Edge</h4><p>MEMS microphones, low-bitrate audio codec, on-device buffer and queue, low-power short-range radio link, short-range ranging for proximity gating and staff location, RGB status indicator, battery-management (BMS) monitoring, over-the-air firmware updates, low-level firmware</p></div>
+          <div><h4>Hub</h4><p>Local compute driving a display, voice-controlled UI with a compact on-hub speech model, two-channel audio capture, secured cloud uplink, daily OTA check and firmware push to docked wearables, update logging, encrypted local storage with 24-hour retention</p></div>
+          <div><h4>Cloud</h4><p>Secured ingest and authentication, streaming queue, self-hosted speech-to-text, asynchronous streaming service, OTA firmware store</p></div>
+          <div><h4>AI / Structuring</h4><p>General-purpose LLM, instruction-based prompting, SOAP notes in a fixed JSON schema</p></div>
+        </div>
+        <p class="cs-caption" style="margin-top:18px;">
+          The same short-range ranging that gates connection by distance also lets the system point staff to where a
+          doctor or nurse is in the building.
+        </p>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>Outcome</h2>
+        <p>
+          Instead of typing into a blank form, doctors now get a draft to check and approve. In use, it was
+          reported to cut documentation effort by around 30%, which gave doctors time back to see more patients, since
+          documentation became a quick review-and-approve step instead of writing everything out by hand. And
+          because a person still signs off on every note, that speed did not cost them control over what goes into
+          the record.
+        </p>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>In development</h2>
+        <p>
+          We were also extending the same lapel wearable to do non-invasive vital monitoring and fall detection,
+          with the extra sensors built into the device. This part was still in testing while I was on the product,
+          not deployed yet, so I am listing it as where things were heading rather than as a finished result.
+        </p>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>What I'd carry forward</h2>
+        <ul>
+          <li><b>Battery life drove a lot of the design.</b> Moving to a low-power link and compressing audio on the device both came from one simple question, how long can someone actually wear this, and that mattered more than any spec sheet.</li>
+          <li><b>Getting capture right mattered more than anything clever.</b> The buffer-and-queue fix was unglamorous, but a documentation tool that quietly loses part of a conversation is worse than no tool at all, so the effort was well spent.</li>
+          <li><b>In healthcare, where the data lives is a product decision.</b> Running our own transcription and keeping retention short cost us time and money, but it was the right call for trust, and I would make it again.</li>
+          <li><b>Keeping a person in the loop is what made it usable.</b> Making the doctor approve every note is what turned the AI from a risk into something they were actually willing to use.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <div class="cta">
+          <a class="button" href="../index.html#projects">All case studies</a>
+          <a class="button primary" href="mailto:dineshkumarmjb@gmail.com">Email me</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">&copy; 2026 Dinesh Kumar &middot; Technical Product Lead</div>
+  </footer>
+</body>
+</html>

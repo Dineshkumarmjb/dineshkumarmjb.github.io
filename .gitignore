@@ -1,9 +1,15 @@
-# Source / personal documents — not part of the website
+# Source / personal documents (not part of the website)
 *.pdf
 Career Journey.txt
 
-# Early draft case studies (placeholder content, not published)
-projects/
+# Draft case studies (placeholder content, not published).
+# Publish real pages by allow-listing them individually below.
+projects/*
+!projects/ai-healthcare-platform.html
+!projects/kitchen-automation-platform.html
+
+# Internal project notes (not part of the website)
+PROJECT_GUIDE.md
 
 # OS / editor junk
 .DS_Store

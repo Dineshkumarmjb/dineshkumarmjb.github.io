@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>On-Demand Kitchen Automation Platform | Dinesh Kumar</title>
+  <meta name="description" content="Case study: an in-house R&D program of connected cooking machines that automate Indian and Chinese dishes, from ingredient dispensing to heat control. Product ownership, machine design, and control architecture." />
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand"><a href="../index.html">Dinesh Kumar</a></div>
+      <nav class="nav-links">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#projects">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="cs-hero" style="border-top:none;">
+      <div class="container">
+        <a class="back-link" href="../index.html#projects">&larr; All case studies</a>
+        <p class="eyebrow">Case study &middot; Food-tech &middot; Kitchen automation</p>
+        <h1>On-Demand Kitchen Automation Platform</h1>
+        <p class="section-lead" style="margin-top:16px;">
+          An in-house R&amp;D program to automate the cooking itself: a family of connected machines that turn how a
+          dish is prepared, dispensing ingredients in order and controlling the heat through each stage, into machine
+          behavior, so a portion comes out the same way every time. I designed the machines and owned how the
+          mechanics, motion, control, and software came together as one working system.
+        </p>
+        <div class="cs-meta">
+          <span><b>Role:</b> Product Owner &amp; Technical Lead</span>
+          <span><b>Company:</b> Auxo Labs</span>
+          <span><b>Scope:</b> Machine design, motion and control, software architecture</span>
+          <span><b>Outcome:</b> Working machines across two cuisines on one shared architecture</span>
+        </div>
+        <div class="note" style="margin-top:22px;">
+          Based on a real in-house R&amp;D program I led. Vendor specifics and exact components are abstracted. My role
+          was product ownership, machine and control architecture, and cross-functional execution across software,
+          hardware, design, and manufacturing, not market research or business strategy.
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section" style="border-top:none;">
+      <div class="container">
+        <h2>The problem</h2>
+        <p>
+          A commercial kitchen runs on people repeating skilled work under time pressure, and that is exactly where
+          it strains. The same dish comes out a little different each time, portions drift, and time is lost in the
+          rush. Before designing anything, I spent time watching how food was actually prepared, where time was
+          wasted, and where inconsistency crept in.
+        </p>
+        <p>
+          The goal was to take those observations and turn them into machine behavior: a system that dispenses the
+          right ingredients in the right order, cooks them with the right heat at each stage, and produces the same
+          portion on every run. That meant designing not one machine but a family of them, one per dish type, and a
+          control approach general enough to run all of them from the same base.
+        </p>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>User workflow</h2>
+        <p>
+          The person operating the station chooses what to cook; the machine works out how. The deliberate steps are
+          selecting the dishes and collecting the finished portions; everything between is planned and carried out by
+          the machine.
+        </p>
+        <ul>
+          <li><b>Select:</b> On the curry station, the user selects up to four dishes to cook at once, one for each of the four induction stoves.</li>
+          <li><b>Plan:</b> The station turns the selection into a process queue, sequencing the work from the cooking time of each dish, so ingredients arrive and heat changes line up with where each dish is in its process.</li>
+          <li><b>Locate:</b> The stoves identify themselves through RF tags and proximity sensors give the moving parts their positions, so the machine acts on what it senses rather than on a fixed assumption of where everything is.</li>
+          <li><b>Move:</b> The central cooking station and the ingredient carousel rotate in either direction, clockwise or anticlockwise, taking the shorter way round to reach each dispenser rather than a fixed route.</li>
+          <li><b>Dispense:</b> Spices come from a rotating carousel of containers, solids and vegetables from a dispenser to one side, and oil and sauces from a liquid dispenser at the back driven by peristaltic pumps, with load-balancing sensors in the powder and liquid stations checking how much has gone in, each added at its point in the sequence.</li>
+          <li><b>Cook:</b> The induction heat is stepped through the process instead of held at one setting, matching the stage each dish is in.</li>
+          <li><b>Serve:</b> Up to four dishes finish in parallel, cooked to the same steps each run.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>System architecture</h2>
+        <p>
+          The curry station is built around a central cooking station ringed by four induction stoves, with the
+          ingredient sources arranged around it: a rotating spice carousel on one side, a vegetable and solids
+          dispenser on the other, a liquid dispenser for oil and sauces at the back, and the operator at the front.
+          Rotation, rather than a separate arm reaching to each source, is how the machine gets to everything it
+          needs, so one motion system serves many stations.
+        </p>
+        <div class="cs-figure">
+          <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Top-down layout of the curry station: a central cooking station with four induction stoves, a rotating spice carousel to the right, a vegetable and solids dispenser to the left, a liquid dispenser at the back, and the user at the front">
+            <defs>
+              <marker id="ka" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+              </marker>
+              <marker id="kar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#e0a53f"/>
+              </marker>
+              <style>
+                .kbg { fill:#0f172a; stroke:#1f2937; }
+                .station { fill:#111827; stroke:#38bdf8; stroke-width:1.5; }
+                .carousel { fill:#111827; stroke:#e0a53f; stroke-width:1.5; }
+                .disp { fill:#111827; stroke:#334155; stroke-width:1.5; }
+                .hob { fill:#0f172a; stroke:#94a3b8; stroke-width:1.3; }
+                .spice { fill:#0f172a; stroke:#e0a53f; stroke-width:1.2; }
+                .kt { fill:#e5e7eb; font:13px Inter,sans-serif; text-anchor:middle; }
+                .ktb { fill:#e5e7eb; font:600 14px Inter,sans-serif; text-anchor:middle; }
+                .kts { fill:#94a3b8; font:10px Inter,sans-serif; text-anchor:middle; }
+                .khob { fill:#cbd5e1; font:10px Inter,sans-serif; text-anchor:middle; }
+                .kflow { stroke:#64748b; stroke-width:2; fill:none; marker-end:url(#ka); }
+                .krot { stroke:#e0a53f; stroke-width:2; fill:none; marker-end:url(#kar); stroke-dasharray:5 4; }
+                .kleg { fill:#c79433; font:11px Inter,sans-serif; }
+              </style>
+            </defs>
+
+            <rect class="kbg" x="8" y="8" width="884" height="584" rx="14"/>
+
+            <!-- liquid dispenser (back / top) -->
+            <rect class="disp" x="325" y="60" width="180" height="60" rx="12"/>
+            <text class="kt" x="415" y="86">Liquid dispenser</text>
+            <text class="kts" x="415" y="104">oil, sauces</text>
+            <path class="kflow" d="M415 120 V156"/>
+
+            <!-- vegetable dispenser (left) -->
+            <rect class="disp" x="36" y="268" width="156" height="74" rx="12"/>
+            <text class="kt" x="114" y="300">Vegetable /</text>
+            <text class="kt" x="114" y="318">solids dispenser</text>
+            <path class="kflow" d="M192 305 H262"/>
+
+            <!-- cooking station -->
+            <circle class="station" cx="410" cy="305" r="150"/>
+            <text class="ktb" x="410" y="309">Cooking station</text>
+            <circle class="hob" cx="410" cy="205" r="32"/>
+            <text class="khob" x="410" y="209">Ind 1</text>
+            <circle class="hob" cx="510" cy="305" r="32"/>
+            <text class="khob" x="510" y="309">Ind 2</text>
+            <circle class="hob" cx="410" cy="405" r="32"/>
+            <text class="khob" x="410" y="409">Ind 3</text>
+            <circle class="hob" cx="310" cy="305" r="32"/>
+            <text class="khob" x="310" y="309">Ind 4</text>
+
+            <!-- bidirectional rotation -->
+            <path class="krot" d="M410 118 A187 187 0 0 1 560 190"/>
+            <path class="krot" d="M410 492 A187 187 0 0 1 254 415"/>
+
+            <!-- spice carousel (right) -->
+            <circle class="carousel" cx="685" cy="305" r="118"/>
+            <text class="kt" x="712" y="228">Spice carousel</text>
+            <text class="kts" x="712" y="246">rotating containers</text>
+            <circle class="spice" cx="602" cy="312" r="13"/>
+            <circle class="spice" cx="632" cy="312" r="13"/>
+            <circle class="spice" cx="662" cy="312" r="13"/>
+            <circle class="spice" cx="692" cy="312" r="13"/>
+            <text class="kts" x="712" y="360">spice containers</text>
+            <!-- dispense chute toward induction 2 -->
+            <path class="krot" d="M588 312 H548"/>
+
+            <!-- user (front / bottom) -->
+            <rect class="disp" x="330" y="500" width="160" height="56" rx="12"/>
+            <text class="ktb" x="410" y="533">User</text>
+
+            <!-- legend -->
+            <text class="kleg" x="20" y="576">Ingredients meet the food by rotating the station and carousel to each dispenser, taking the shorter direction round.</text>
+          </svg>
+          <p class="cs-caption">
+            The curry station, top down. Four induction stoves ring a central cooking station; a rotating spice
+            carousel, a vegetable and solids dispenser, and a liquid dispenser for oil and sauces sit around it. The
+            station and carousel turn in whichever direction is shorter to bring each dispenser to the food, so a
+            single motion system serves every station rather than one mechanism per source.
+          </p>
+        </div>
+
+        <p style="margin-top:26px;">
+          Underneath the mechanics, each machine is a set of subsystems that has to stay in step: the drive that
+          rotates the station and carousel, the dispensers, and the induction heat control all have to act at the
+          right moment, or the dish is wrong. I built this as a ROS-like architecture, independent nodes that
+          coordinate by passing messages rather than by direct wiring. Selecting the dishes builds a process queue,
+          and the nodes work through that queue together, sharing messages as each step comes due. The stoves
+          identify themselves to the system through RF tags, and proximity sensors give the moving parts their
+          positions, so the machine acts on what it senses rather than on assumptions about where things are. The
+          same architecture runs every machine in the family, not just the curry station.
+        </p>
+        <div class="cs-figure">
+          <svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Control architecture: selecting the dishes builds a process queue that a ROS-like set of nodes, the drive, dispensers, and induction heat control, works through by passing messages over a publish and subscribe layer, reused across every machine">
+            <defs>
+              <marker id="kc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+              </marker>
+              <style>
+                .cbg { fill:#0f172a; stroke:#1f2937; }
+                .cbox { fill:#111827; stroke:#334155; stroke-width:1.4; }
+                .cboxa { fill:#111827; stroke:#38bdf8; stroke-width:1.4; }
+                .cboxp { fill:#111827; stroke:#a78bfa; stroke-width:1.4; }
+                .cbus { fill:#0f172a; stroke:#e0a53f; stroke-width:1.6; }
+                .ct { fill:#e5e7eb; font:13px Inter,sans-serif; text-anchor:middle; }
+                .cts { fill:#94a3b8; font:10px Inter,sans-serif; text-anchor:middle; }
+                .cbust { fill:#e0a53f; font:600 13px Inter,sans-serif; text-anchor:middle; letter-spacing:0.04em; }
+                .cbussub { fill:#c79433; font:10px Inter,sans-serif; text-anchor:middle; }
+                .cflow { stroke:#64748b; stroke-width:2; fill:none; marker-end:url(#kc); }
+                .cnote { fill:#94a3b8; font:11px Inter,sans-serif; text-anchor:middle; }
+              </style>
+            </defs>
+
+            <rect class="cbg" x="8" y="8" width="884" height="424" rx="14"/>
+
+            <!-- user selection -->
+            <rect class="cboxa" x="330" y="28" width="240" height="44" rx="8"/>
+            <text class="ct" x="450" y="55">User selects up to 4 dishes</text>
+            <path class="cflow" d="M450 72 V98"/>
+
+            <!-- sequencer / process queue -->
+            <rect class="cboxp" x="298" y="98" width="304" height="56" rx="8"/>
+            <text class="ct" x="450" y="122">Sequencer / process queue</text>
+            <text class="cts" x="450" y="140">orders by cooking time, plans shortest rotation</text>
+            <path class="cflow" d="M450 154 V192"/>
+
+            <!-- messaging bus -->
+            <rect class="cbus" x="60" y="192" width="780" height="54" rx="10"/>
+            <text class="cbust" x="450" y="214">Publish / subscribe messaging</text>
+            <text class="cbussub" x="450" y="232">ROS-like nodes exchange messages against the process queue</text>
+
+            <!-- subsystems -->
+            <rect class="cbox" x="66" y="304" width="140" height="66" rx="8"/>
+            <text class="ct" x="136" y="333">Station drive</text>
+            <text class="cts" x="136" y="351">stepper + proximity</text>
+            <path class="cflow" d="M136 304 V246"/>
+
+            <rect class="cbox" x="224" y="304" width="140" height="66" rx="8"/>
+            <text class="ct" x="294" y="333">Spice carousel</text>
+            <text class="cts" x="294" y="351">rotate + dose, load-sensed</text>
+            <path class="cflow" d="M294 304 V246"/>
+
+            <rect class="cbox" x="382" y="304" width="140" height="66" rx="8"/>
+            <text class="ct" x="452" y="333">Vegetable dispenser</text>
+            <text class="cts" x="452" y="351">servo motor</text>
+            <path class="cflow" d="M452 304 V246"/>
+
+            <rect class="cbox" x="540" y="304" width="140" height="66" rx="8"/>
+            <text class="ct" x="610" y="333">Liquid dispenser</text>
+            <text class="cts" x="610" y="351">peristaltic, load-sensed</text>
+            <path class="cflow" d="M610 304 V246"/>
+
+            <rect class="cbox" x="698" y="304" width="140" height="66" rx="8"/>
+            <text class="ct" x="768" y="333">Induction heat</text>
+            <text class="cts" x="768" y="351">RF-tagged, per stage</text>
+            <path class="cflow" d="M768 304 V246"/>
+
+            <text class="cnote" x="450" y="406">One ROS-like software architecture runs every machine: curry station, roti, dosa and idli makers, wok and noodle makers.</text>
+          </svg>
+          <p class="cs-caption">
+            The control side. Selecting the dishes builds a process queue; from there a ROS-like set of nodes, the
+            drive, the dispensers, and the induction heat control, works through it by passing messages rather than by
+            direct wiring. Stoves identify themselves through RF tags, proximity sensors report position, and
+            load-balancing sensors in the powder and liquid stations check how much has been dispensed. The same
+            architecture is reused unchanged across every machine in both cuisine lines.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>Product decisions I owned</h2>
+
+        <div class="decision">
+          <h4>One ROS-like control architecture for every machine</h4>
+          <p>
+            Rather than program the curry station, the roti, dosa and idli makers, and the Chinese wok and noodle
+            machines each from scratch, I built a single ROS-like architecture, independent nodes that coordinate by
+            passing messages, and reused it across all of them. Selecting the dishes builds a process queue that the
+            nodes work through together, so a new machine became a variation on a proven base, differing in its
+            mechanics and recipe steps rather than in how it was controlled and coordinated.
+          </p>
+          <span class="tradeoff">Trade-off: more effort designing a general node architecture up front, in exchange for every later machine starting from something that already worked instead of a blank slate.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Reserve precision for where the food depends on it</h4>
+          <p>
+            I selected the motors and drivers for the machines: stepper motors to drive the motion, the rotating
+            station and the carousels, and servo motors to drive the dispensers. Positioning the mechanics is a
+            repeatable, bounded move that steppers handle cheaply; how much of an ingredient is dispensed is where
+            accuracy shows up on the plate, so that is where the closed-loop servos went. In the powder and liquid
+            stations I added load-balancing sensors, so the amount going into each dish is measured rather than
+            assumed.
+          </p>
+          <span class="tradeoff">Trade-off: steppers run without position feedback, so the motion had to be designed to stay within their limits; spending servos and load sensing only where the dose matters kept cost down without giving up portion accuracy.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Design a peristaltic pump for the liquid dispensers</h4>
+          <p>
+            The liquid dispensers use peristaltic pumps that I designed, which move oil and sauces by squeezing them
+            along a flexible tube rather than drawing them through the pump body.
+          </p>
+          <span class="tradeoff">Trade-off: a peristaltic pump meters more slowly than an open valve, and the tubing is a wear part that has to be replaced on a schedule.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Move to publish and subscribe messaging after losing data</h4>
+          <p>
+            The nodes first shared their messages over a direct, point-to-point transport. Under the traffic of
+            several of them coordinating in real time, messages went missing, and a dropped message in a cooking
+            sequence means a skipped ingredient or a wrong heat step. I moved the machines to a lightweight publish
+            and subscribe messaging protocol built for exactly this kind of many-to-many device communication, which
+            made the coordination reliable.
+          </p>
+          <span class="tradeoff">Trade-off: an added messaging layer to run and reason about, accepted because dependable delivery between subsystems was not optional in a machine that cooks.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Plan each run around cooking time and travel</h4>
+          <p>
+            Instead of a fixed routine, the curry station plans each run from the cooking time of the selected dishes
+            and turns the station and carousel in whichever direction reaches the next dispenser sooner, while the
+            induction heat is stepped through the process rather than held flat. That is what lets it cook up to four
+            dishes at once without their steps colliding at a shared dispenser.
+          </p>
+          <span class="tradeoff">Trade-off: more coordination logic to get right, in exchange for real parallelism across the four stoves instead of cooking one dish at a time.</span>
+        </div>
+
+        <div class="decision">
+          <h4>Build around rotation instead of many reaching arms</h4>
+          <p>
+            The layout puts the dispensers around a central cooking station and moves the food to each source by
+            rotating, rather than giving every station its own mechanism to reach every ingredient. One motion system
+            does the work that several would otherwise duplicate.
+          </p>
+          <span class="tradeoff">Trade-off: sources are reached one position at a time rather than all at once, which is why the planning that orders and shortens that travel mattered as much as the mechanics.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>Tech stack</h2>
+        <div class="stack-grid">
+          <div><h4>Machines / Mechanics</h4><p>Central rotating cooking station with four induction stoves, rotating spice carousel, vegetable and solids dispenser, liquid dispenser for oil and sauces</p></div>
+          <div><h4>Motion</h4><p>Stepper motors for station and carousel positioning, servo motors for dispensing, selected motor drivers</p></div>
+          <div><h4>Sensing</h4><p>RF tags for induction-stove identification, proximity sensors for position, load-balancing sensors in the powder and liquid stations</p></div>
+          <div><h4>Fluid handling</h4><p>Purpose-designed peristaltic pumps for metered, clean dispensing of oil and sauces</p></div>
+          <div><h4>Control &amp; communication</h4><p>ROS-like node architecture, a process queue built on dish selection, a publish and subscribe messaging layer, one shared architecture across all machines</p></div>
+          <div><h4>Coordination</h4><p>Sequencing from each dish's cooking time, shortest-direction rotation planning, stage-based induction heat control, up to four dishes at once</p></div>
+          <div><h4>Indian line</h4><p>Curry station, roti maker, dosa maker, idli maker</p></div>
+          <div><h4>Chinese line</h4><p>Wok for fried rice, noodle maker</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>Outcome</h2>
+        <p>
+          The program produced working machines across two cuisines: an Indian line with the curry station and the
+          roti, dosa and idli makers, and a Chinese line with a wok for fried rice and a noodle maker, all running on
+          the same control architecture. The curry station cooked up to four dishes at once, dispensing and heating
+          each along its own planned sequence, and the move to publish and subscribe messaging is what made that
+          coordination dependable. As an in-house R&amp;D effort, the result was a set of working machines and a
+          reusable architecture rather than a shipped commercial product.
+        </p>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <h2>What I'd carry forward</h2>
+        <ul>
+          <li><b>Watch the work before automating it.</b> The machine behavior came from watching how a real kitchen actually worked, where time was lost and where results drifted, not from a spec.</li>
+          <li><b>Design the platform, not just the product.</b> One control architecture across every machine turned each new dish type into a variation rather than a project of its own.</li>
+          <li><b>Reliable communication is a product feature.</b> The switch to publish and subscribe messaging was invisible to anyone watching the machine, and it was the difference between coordination that held together and one that dropped steps.</li>
+          <li><b>Spend precision where it reaches the plate.</b> Choosing servos for dispensing and steppers for motion put accuracy and cost where each belonged.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <div class="container">
+        <div class="cta">
+          <a class="button" href="../index.html#projects">All case studies</a>
+          <a class="button primary" href="mailto:dineshkumarmjb@gmail.com">Email me</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">&copy; 2026 Dinesh Kumar &middot; Technical Product Lead</div>
+  </footer>
+</body>
+</html>
